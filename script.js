@@ -2167,7 +2167,7 @@ const Home = ({
   );
 };
 
-const Workout = ({ profile, history, cardioHistory, colorfulExerciseCards, onSelectExercise, settings, setSettings, recentExercises, starredExercises, onToggleStarred, exerciseUsageCounts, activeSession, onFinishSession, onStartWorkoutFromBuilder, onAddExerciseFromSearch, onPushMessage, onRemoveSessionExercise, onSwapSessionExercise, onStartEmptySession, isRestDay, onCancelSession, sessionIntent, onApplyTemplate, openTemplatesFromHome, onConsumedOpenTemplatesFromHome }) => {
+const Workout = ({ profile, history, cardioHistory, colorfulExerciseCards, onSelectExercise, settings, setSettings, recentExercises, starredExercises, onToggleStarred, exerciseUsageCounts, activeSession, onFinishSession, onStartWorkoutFromBuilder, onAddExerciseFromSearch, onPushMessage, onRemoveSessionExercise, onSwapSessionExercise, onStartEmptySession, isRestDay, onCancelSession, sessionIntent, onApplyTemplate, openTemplatesFromHome, onConsumedOpenTemplatesFromHome, onOpenSettings, onLogRestDay }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 200);
   const [libraryVisible, setLibraryVisible] = useState(settings.showAllExercises);
@@ -2586,6 +2586,27 @@ const Workout = ({ profile, history, cardioHistory, colorfulExerciseCards, onSel
           <div>
             <h1 className="text-2xl font-black workout-title">Workout</h1>
             <div className="text-xs workout-muted font-bold">Draft → Start → Active → Finish</div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onLogRestDay}
+              className="workout-header-icon"
+              title={isRestDay ? 'Undo rest day' : 'Log rest day'}
+            >
+              <span aria-hidden="true">😴</span>
+            </button>
+            <button
+              type="button"
+              className="workout-header-icon"
+              onClick={onOpenSettings}
+              title="Settings"
+            >
+              <span aria-hidden="true">⚙️</span>
+            </button>
+            <div className="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center text-base border border-purple-200 select-none">
+              {profile.avatar}
+            </div>
           </div>
         </div>
       </div>
@@ -4136,11 +4157,6 @@ const PlateCalculator = ({ targetWeight, barWeight, onClose }) => {
       const [dataToolsOpen, setDataToolsOpen] = useState(false);
       const [advancedOpen, setAdvancedOpen] = useState(false);
 
-      const accentOptions = [
-        { id: 'red', label: 'Red', color: '#ef4444' },
-        { id: 'yellow', label: 'Yellow', color: '#f59e0b' },
-        { id: 'blue', label: 'Blue', color: '#3b82f6' },
-      ];
       const isDarkMode = themeMode === 'dark';
 
       const learnItems = [
@@ -4161,7 +4177,16 @@ const PlateCalculator = ({ targetWeight, barWeight, onClose }) => {
       return (
         <div className="flex flex-col h-full bg-gray-50">
           <div className="bg-white border-b border-gray-100 sticky top-0 z-10" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-            <h1 className="text-2xl font-black text-gray-900 p-4 py-5">Profile & Settings</h1>
+            <div className="p-4 py-5 flex items-center gap-3">
+              <button
+                onClick={() => window.history.back()}
+                className="settings-back-button"
+                aria-label="Go back"
+              >
+                <Icon name="ChevronLeft" className="w-5 h-5" />
+              </button>
+              <h1 className="text-2xl font-black text-gray-900">Profile & Settings</h1>
+            </div>
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 pb-24 space-y-4">
@@ -4172,7 +4197,7 @@ const PlateCalculator = ({ targetWeight, barWeight, onClose }) => {
               >
                 <div>
                   <div className="text-xs font-bold text-gray-500 uppercase">Appearance</div>
-                  <div className="text-sm text-gray-500">Theme and accent</div>
+                  <div className="text-sm text-gray-500">Theme</div>
                 </div>
                 <Icon name="ChevronDown" className={`w-4 h-4 text-gray-400 transition-transform ${appearanceOpen ? 'rotate-180' : ''}`} />
               </button>
@@ -4181,7 +4206,7 @@ const PlateCalculator = ({ targetWeight, barWeight, onClose }) => {
                   <ToggleRow
                     icon="Moon"
                     title="Dark Mode"
-                    subtitle="Low-glare interface"
+                    subtitle="Infinity palette with nebula glow"
                     enabled={isDarkMode}
                     onToggle={(next) => setThemeMode(next ? 'dark' : 'light')}
                   />
@@ -4192,29 +4217,6 @@ const PlateCalculator = ({ targetWeight, barWeight, onClose }) => {
                     enabled={colorfulExerciseCards}
                     onToggle={onToggleColorfulExerciseCards}
                   />
-                  <div>
-                    <div className="text-xs font-bold text-gray-500 uppercase mb-2">Dark mode accent</div>
-                    <div className="flex gap-2">
-                      {accentOptions.map(opt => (
-                        <button
-                          key={opt.id}
-                          onClick={() => isDarkMode && setDarkVariant(opt.id)}
-                          disabled={!isDarkMode}
-                          aria-disabled={!isDarkMode}
-                          className={`flex-1 accent-pill ${isDarkMode && darkVariant === opt.id ? 'active' : ''} rounded-xl p-2 flex items-center gap-2 ${isDarkMode ? '' : 'opacity-50 pointer-events-none'}`}
-                        >
-                          <span className="w-6 h-6 rounded-lg" style={{ background: opt.color }}></span>
-                          <span className="text-sm font-semibold text-gray-800">{opt.label}</span>
-                        </button>
-                      ))}
-                    </div>
-                    <div className="text-xs font-bold text-gray-500 uppercase mt-3">Theme preview</div>
-                    <div className="theme-preview">
-                      <div className="preview-btn">Primary</div>
-                      <div className="preview-chip">Chip</div>
-                      <div className="preview-card">Card border</div>
-                    </div>
-                  </div>
                 </div>
               )}
             </Card>
@@ -6894,6 +6896,8 @@ return (
                     onApplyTemplate={applyTemplatePlan}
                     openTemplatesFromHome={openTemplatesFromHome}
                     onConsumedOpenTemplatesFromHome={() => setOpenTemplatesFromHome(false)}
+                    onOpenSettings={handleOpenSettingsFromHome}
+                    onLogRestDay={() => toggleRestDay(toDayKey(new Date()))}
                   />
                 </div>
                 <div className={`page ${!showAnalytics && !showPatterns && !showMuscleMap && tab === 'profile' ? 'active' : ''}`} aria-hidden={showAnalytics || showPatterns || showMuscleMap || tab !== 'profile'}>

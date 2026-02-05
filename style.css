@@ -45,6 +45,7 @@ html, body {
   );
   --surface: #ffffff;
   --surface-2: var(--infinity-off-white);
+  --surface-elevated: color-mix(in srgb, #ffffff 84%, var(--violet-glow-light) 16%);
   --card-gradient: linear-gradient(
     145deg,
     rgba(255, 255, 255, 0.4) 0%,
@@ -52,8 +53,10 @@ html, body {
   );
   --text: #0f1117;
   --text-strong: #0b0d14;
+  --text-subtle: #4b5568;
   --muted: #6b7280;
   --border: var(--infinity-shadow);
+  --border-subtle: color-mix(in srgb, var(--border) 78%, transparent);
   --hairline: color-mix(in srgb, var(--border) 55%, transparent);
   --accent: var(--infinity-violet);
   --accent-hover: var(--violet-glow-deep);
@@ -99,6 +102,35 @@ body {
   line-height: 1.5;
 }
 
+
+.ps-bg {
+  background: var(--bg-gradient);
+}
+
+.ps-surface {
+  background: var(--surface);
+}
+
+.ps-surface-elevated {
+  background: var(--card-gradient), var(--surface-elevated);
+}
+
+.ps-text-strong {
+  color: var(--text-strong);
+}
+
+.ps-text-subtle {
+  color: var(--text-subtle);
+}
+
+.ps-text-muted {
+  color: var(--muted);
+}
+
+.ps-border-subtle {
+  border-color: var(--border-subtle);
+}
+
 .stat-number {
   font-family: var(--font-display);
   font-size: 1.4em;
@@ -134,15 +166,18 @@ body.dark-mode {
   --surface: var(--infinity-deep-space);
   --surface-2: var(--infinity-night);
   --surface-3: var(--infinity-dark-surface);
+  --surface-elevated: color-mix(in srgb, var(--infinity-dark-surface) 86%, var(--glow-violet) 14%);
   
   /* Text */
-  --text: #A8AEBB;
-  --text-strong: #E2E4E9;
-  --muted: #5C6370;
+  --text: #B6BCCB;
+  --text-strong: #F2F4FA;
+  --text-subtle: #98A0B2;
+  --muted: #6F7789;
   
   /* Borders - very subtle */
-  --border: #1A1D26;
-  --border-glow: rgba(156, 107, 255, 0.15);
+  --border: #23283A;
+  --border-subtle: color-mix(in srgb, #2A3148 70%, transparent);
+  --border-glow: rgba(156, 107, 255, 0.24);
   --hairline: rgba(255, 255, 255, 0.03);
   
   /* Card styling - minimal gradient, let glow do the work */
@@ -174,15 +209,15 @@ body.dark-mode {
   --tint-shoulders: #F0B2FF;
   
   /* Accent - violet from spectrum */
-  --accent: var(--nebula-violet);
+  --accent: #B390FF;
   --accent-hover: var(--glow-violet);
-  --accent-soft: rgba(126, 91, 255, 0.18);
+  --accent-soft: rgba(156, 107, 255, 0.26);
   --focus-ring: 0 0 0 3px rgba(156, 107, 255, 0.3);
   
   /* Glass effects */
-  --glass-bg: rgba(12, 14, 20, 0.85);
-  --glass-border: rgba(156, 107, 255, 0.1);
-  --glass-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+  --glass-bg: rgba(13, 16, 26, 0.74);
+  --glass-border: rgba(156, 107, 255, 0.2);
+  --glass-shadow: 0 24px 60px rgba(2, 4, 10, 0.78);
   --glass-blur: 20px;
 }
 
@@ -190,9 +225,10 @@ body.dark-mode {
 body.dark-mode {
   background: var(--bg);
   background-image: 
-    radial-gradient(ellipse 100% 80% at 50% -20%, rgba(156, 107, 255, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse 80% 60% at 100% 100%, rgba(111, 234, 255, 0.03) 0%, transparent 40%),
-    radial-gradient(ellipse 80% 60% at 0% 100%, rgba(247, 166, 255, 0.03) 0%, transparent 40%);
+    radial-gradient(ellipse 120% 92% at 50% -24%, rgba(156, 107, 255, 0.16) 0%, transparent 58%),
+    radial-gradient(ellipse 90% 68% at 100% 108%, rgba(111, 234, 255, 0.12) 0%, transparent 48%),
+    radial-gradient(ellipse 90% 68% at 0% 108%, rgba(247, 166, 255, 0.11) 0%, transparent 48%);
+  background-attachment: fixed;
 }
 
 /* Dark mode card and surface overrides */
@@ -608,7 +644,7 @@ body.app-shell {
   min-width: 0;
 }
 
-.home-screen > .bg-white {
+.home-screen > .home-header-chrome {
   border-radius: 0 0 var(--radius-small) var(--radius-small);
   box-shadow: none;
 }
@@ -1084,8 +1120,9 @@ body.exercise-colors-off .exercise-badge-wrapper {
   width: 32px;
   height: 32px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: color-mix(in srgb, var(--surface) 76%, transparent);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--accent) 14%, transparent);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2330,13 +2367,36 @@ textarea::placeholder {
 }
 
 .tabbar {
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  box-shadow: 0 -10px 24px rgba(15, 23, 42, 0.08);
+  background: color-mix(in srgb, var(--glass-bg) 88%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--glass-border) 88%, var(--border-subtle));
+  box-shadow: 0 -14px 34px color-mix(in srgb, var(--accent) 14%, transparent);
+  backdrop-filter: blur(calc(var(--glass-blur) * 0.85));
+  -webkit-backdrop-filter: blur(calc(var(--glass-blur) * 0.85));
 }
 
 .tab-active {
   color: var(--accent) !important;
+  text-shadow: 0 0 16px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+.home-header-chrome {
+  background: color-mix(in srgb, var(--glass-bg) 84%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--glass-border) 82%, var(--border-subtle));
+  box-shadow: 0 14px 28px color-mix(in srgb, var(--accent) 12%, transparent);
+  backdrop-filter: blur(calc(var(--glass-blur) * 0.78));
+  -webkit-backdrop-filter: blur(calc(var(--glass-blur) * 0.78));
+}
+
+.home-avatar-chip,
+.workout-avatar-chip {
+  background: color-mix(in srgb, var(--surface-elevated) 78%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border-subtle));
+  box-shadow: 0 12px 24px color-mix(in srgb, var(--accent) 22%, transparent), inset 0 1px 0 var(--hairline);
+}
+
+.home-avatar-chip:active,
+.workout-avatar-chip:active {
+  box-shadow: 0 8px 16px color-mix(in srgb, var(--accent) 20%, transparent), inset 0 1px 0 var(--hairline);
 }
 
 .quick-generator-button {

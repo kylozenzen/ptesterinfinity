@@ -1406,7 +1406,7 @@ const { useState, useEffect, useMemo, useRef, useCallback } = React;
                 className={`flex flex-col items-center gap-1 w-full h-full justify-center transition-colors ${
                   currentTab === t.id 
                     ? 'tab-active' 
-                    : 'text-gray-400'
+                    : 'ps-text-muted'
                 }`}
               >
                 <Icon name={t.icon} className="w-6 h-6" />
@@ -2192,15 +2192,15 @@ const Home = ({
   ]), []);
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 home-screen">
-      <div className="bg-white border-b border-gray-100 sticky top-0 z-20" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+    <div className="flex flex-col h-full ps-bg home-screen">
+      <div className="home-header-chrome sticky top-0 z-20" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="px-4 py-3 flex items-center justify-between">
           <div>
-            <div className="text-[11px] text-gray-400 font-bold uppercase tracking-[0.2em] select-none">
+            <div className="text-[11px] ps-text-muted font-bold uppercase tracking-[0.2em] select-none">
               PLANET STRENGTH
             </div>
-            <h1 className="text-xl font-black text-gray-900">Welcome back, {profile.username || 'Athlete'}</h1>
-            <div className="text-xs text-gray-500 font-semibold mt-1">A session on your terms.</div>
+            <h1 className="text-xl font-black ps-text-strong">Welcome back, {profile.username || 'Athlete'}</h1>
+            <div className="text-xs ps-text-subtle font-semibold mt-1">A session on your terms.</div>
           </div>
           <div className="flex items-center gap-3">
             <button
@@ -2229,10 +2229,10 @@ const Home = ({
               <span aria-hidden="true">⚙️</span>
             </button>
             <div 
-              className="w-11 h-11 rounded-2xl bg-purple-50 flex items-center justify-center text-xl border border-purple-200 cursor-pointer select-none transition-transform active:scale-95"
+              className="home-avatar-chip w-11 h-11 rounded-2xl flex items-center justify-center text-xl cursor-pointer select-none transition-transform active:scale-95"
               style={{
                 transform: isHolding ? 'scale(0.9)' : 'scale(1)',
-                boxShadow: isHolding ? '0 0 20px rgba(147, 51, 234, 0.5)' : 'none',
+                boxShadow: isHolding ? '0 0 22px color-mix(in srgb, var(--accent) 52%, transparent)' : 'none',
                 transition: 'all 0.1s ease'
               }}
               onTouchStart={handleAvatarTouchStart}
@@ -2726,8 +2726,8 @@ const Workout = ({ profile, history, cardioHistory, colorfulExerciseCards, onSel
   const showCompactSearchInput = showCompactControls && (showCompactSearch || !!searchQuery);
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 workout-shell relative">
-      <div className="bg-white border-b border-gray-100 sticky top-0 z-20" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+    <div className="flex flex-col h-full ps-bg workout-shell relative">
+      <div className="home-header-chrome sticky top-0 z-20" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="px-4 py-4 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-black workout-title">Workout</h1>
@@ -2750,7 +2750,7 @@ const Workout = ({ profile, history, cardioHistory, colorfulExerciseCards, onSel
             >
               <span aria-hidden="true">⚙️</span>
             </button>
-            <div className="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center text-base border border-purple-200 select-none">
+            <div className="workout-avatar-chip w-9 h-9 rounded-xl flex items-center justify-center text-base select-none">
               {profile.avatar}
             </div>
           </div>
@@ -6931,7 +6931,7 @@ return (
               onBrowse={() => setLockedInDismissed(true)}
             />
           )}
-          <div className="app-root bg-gray-50 flex flex-col overflow-hidden">
+          <div className="app-root ps-bg flex flex-col overflow-hidden">
             <div className="app-main">
               <InlineMessage message={tab === 'home' && inlineMessage === 'Workout saved.' ? null : inlineMessage} />
               <UndoToast message={undoToast?.message} onUndo={handleUndoAction} />

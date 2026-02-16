@@ -9,6 +9,7 @@ html, body {
 }
 
 :root {
+  color-scheme: light dark;
   /* ═══════════════════════════════════════════════════════════════════
      🌈 PLANET STRENGTH — INFINITY PALETTE (Light Mode)
      ═══════════════════════════════════════════════════════════════════ */
@@ -100,6 +101,220 @@ body {
   overscroll-behavior: none;
   transition: background-color 0.25s ease, color 0.25s ease;
   line-height: 1.5;
+}
+
+:root {
+  --space-1: 0.375rem;
+  --space-2: 0.625rem;
+  --space-3: 0.875rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --radius-card: 16px;
+  --radius-control: 12px;
+  --radius-small: 10px;
+  --bg: #f6f7fb;
+  --panel: rgba(10, 15, 28, 0.04);
+  --panel-strong: rgba(10, 15, 28, 0.07);
+  --text: #0a0f1c;
+  --text-strong: #0a0f1c;
+  --text-subtle: #374151;
+  --muted: #5b6472;
+  --border: rgba(10, 15, 28, 0.12);
+  --accent: #00a3ff;
+  --accent-hover: #0086d1;
+  --glow: rgba(0, 163, 255, 0.25);
+  --focus-ring: 0 0 0 3px rgba(0, 163, 255, 0.25);
+  --shadow-card: 0 8px 26px rgba(15, 23, 42, 0.08);
+  --shadow-card-soft: 0 6px 18px rgba(15, 23, 42, 0.06);
+  --card-gradient: linear-gradient(160deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.35) 100%);
+  --bg-gradient: radial-gradient(circle at top, rgba(0, 163, 255, 0.05), transparent 46%), #f6f7fb;
+  --transition-ui: 150ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+body.dark-mode,
+body[data-theme="dark"] {
+  --bg: #070b14;
+  --panel: rgba(255, 255, 255, 0.04);
+  --panel-strong: rgba(255, 255, 255, 0.07);
+  --text: #eef2ff;
+  --text-strong: #eef2ff;
+  --text-subtle: rgba(238, 242, 255, 0.85);
+  --muted: rgba(238, 242, 255, 0.65);
+  --border: rgba(255, 255, 255, 0.1);
+  --accent: #00ff88;
+  --accent-hover: #3dffab;
+  --glow: rgba(0, 255, 136, 0.22);
+  --focus-ring: 0 0 0 3px rgba(0, 255, 136, 0.24);
+  --shadow-card: 0 12px 32px rgba(2, 6, 16, 0.6);
+  --shadow-card-soft: 0 8px 20px rgba(2, 6, 16, 0.45);
+  --card-gradient: linear-gradient(160deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+  --bg-gradient: radial-gradient(circle at top, rgba(0, 255, 136, 0.08), transparent 42%), #070b14;
+}
+
+body,
+.app-root {
+  background: var(--bg-gradient);
+  color: var(--text);
+}
+
+button,
+input,
+textarea,
+select {
+  color: inherit;
+  font: inherit;
+}
+
+button,
+input,
+textarea,
+select,
+a,
+[role="button"] {
+  transition: background-color var(--transition-ui), border-color var(--transition-ui), color var(--transition-ui), box-shadow var(--transition-ui), transform var(--transition-ui);
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.bg-white,
+.Card,
+.home-section-card,
+.home-mini-tile,
+.workout-card,
+.start-today-card,
+.dark-mode-modal {
+  background: var(--card-gradient), var(--panel) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-card) !important;
+  box-shadow: var(--shadow-card-soft);
+  backdrop-filter: blur(8px);
+}
+
+.settings-action-button,
+.accent-button,
+.home-primary-button,
+.finish-button,
+.pill-button,
+.tab-bar-tab {
+  border-radius: var(--radius-control) !important;
+}
+
+.settings-action-button,
+.accent-button,
+.home-primary-button,
+.finish-button,
+.workout-accent-solid {
+  background: color-mix(in srgb, var(--accent) 15%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--accent) 50%, var(--border)) !important;
+  color: var(--text-strong) !important;
+}
+
+.settings-action-button:hover,
+.accent-button:hover,
+.home-primary-button:hover,
+.finish-button:hover,
+.workout-accent-solid:hover {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 50%, transparent), 0 8px 24px var(--glow);
+  transform: translateY(-1px);
+}
+
+input,
+textarea,
+select,
+.dark-mode-input {
+  background: var(--panel) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+  border-radius: var(--radius-control) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted);
+}
+
+.tab-bar,
+.bg-gray-50,
+.workout-shell,
+.home-content {
+  background: transparent !important;
+}
+
+.theme-mode-control {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.theme-mode-chip {
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--muted);
+  padding: 0.45rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.theme-mode-chip.active {
+  border-color: color-mix(in srgb, var(--accent) 72%, var(--border));
+  color: var(--text-strong);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent), 0 0 18px var(--glow);
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity var(--transition-ui);
+}
+
+body.retro-grid-on::before {
+  opacity: 1;
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--accent) 22%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--accent) 18%, transparent) 1px, transparent 1px),
+    radial-gradient(circle at 20% 10%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 45%);
+  background-size: 28px 28px, 28px 28px, auto;
+  opacity: 0.11;
+}
+
+body.retro-scanlines-on::after {
+  opacity: 1;
+  background: repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 3px);
+  mix-blend-mode: soft-light;
+}
+
+body.retro-vignette-on .app-root::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at center, transparent 55%, rgba(0, 0, 0, 0.25) 100%);
+  z-index: 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 

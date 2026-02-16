@@ -24,7 +24,10 @@ const { useState, useEffect, useMemo, useRef, useCallback } = React;
       suggestedWorkoutCollapsed: true,
       useDemoData: false,
       lockedInMode: false,
-      particlesEnabled: true
+      particlesEnabled: true,
+      retroGridEnabled: false,
+      retroScanlinesEnabled: false,
+      retroVignetteEnabled: false
     };
 
     // ========== PWA SETUP ==========
@@ -4294,7 +4297,7 @@ const PlateCalculator = ({ targetWeight, barWeight, onClose }) => {
     };
 
     // ========== PROFILE TAB ==========
-    const ProfileView = ({ settings, setSettings, themeMode, darkVariant, setThemeMode, setDarkVariant, colorfulExerciseCards, onToggleColorfulExerciseCards, onGoBack, onViewAnalytics, onViewPatterns, onViewMuscleMap, onExportData, onImportData, onResetApp, onResetOnboarding }) => {
+    const ProfileView = ({ settings, setSettings, themeMode, resolvedTheme, setThemeMode, colorfulExerciseCards, onToggleColorfulExerciseCards, onGoBack, onViewAnalytics, onViewPatterns, onViewMuscleMap, onExportData, onImportData, onResetApp, onResetOnboarding }) => {
       const [workoutOpen, setWorkoutOpen] = useState(false);
       const [appearanceOpen, setAppearanceOpen] = useState(false);
       const [analyticsOpen, setAnalyticsOpen] = useState(false);
@@ -4303,7 +4306,7 @@ const PlateCalculator = ({ targetWeight, barWeight, onClose }) => {
       const [dataToolsOpen, setDataToolsOpen] = useState(false);
       const [advancedOpen, setAdvancedOpen] = useState(false);
 
-      const isDarkMode = themeMode === 'dark';
+      const isDarkMode = resolvedTheme === 'dark';
 
       const learnItems = [
         {
@@ -4349,13 +4352,30 @@ const PlateCalculator = ({ targetWeight, barWeight, onClose }) => {
               </button>
               {appearanceOpen && (
                 <div className="space-y-3 animate-expand">
-                  <ToggleRow
-                    icon="Moon"
-                    title="Dark Mode"
-                    subtitle="Infinity palette with nebula glow"
-                    enabled={isDarkMode}
-                    onToggle={(next) => setThemeMode(next ? 'dark' : 'light')}
-                  />
+                  <div className="space-y-2">
+                    <div className="text-xs font-bold text-gray-500 uppercase">Theme mode</div>
+                    <div className="theme-mode-control" role="radiogroup" aria-label="Theme mode">
+                      {[
+                        { value: 'system', label: 'System' },
+                        { value: 'light', label: 'Light' },
+                        { value: 'dark', label: 'Dark' }
+                      ].map((option) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          role="radio"
+                          aria-checked={themeMode === option.value}
+                          className={`theme-mode-chip ${themeMode === option.value ? 'active' : ''}`}
+                          onClick={() => setThemeMode(option.value)}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      Active palette: <span className="font-semibold text-gray-700">{isDarkMode ? 'Dark' : 'Light'}</span>
+                    </div>
+                  </div>
                   <ToggleRow
                     icon="Sparkles"
                     title="Colorful exercise cards"
@@ -4369,6 +4389,27 @@ const PlateCalculator = ({ targetWeight, barWeight, onClose }) => {
                     subtitle="Floating Infinity spectrum particles"
                     enabled={settings.particlesEnabled !== false}
                     onToggle={(next) => setSettings({ ...settings, particlesEnabled: next })}
+                  />
+                  <ToggleRow
+                    icon="Sparkles"
+                    title="Retro grid overlay"
+                    subtitle="Subtle arcade grid background"
+                    enabled={settings.retroGridEnabled === true}
+                    onToggle={(next) => setSettings({ ...settings, retroGridEnabled: next })}
+                  />
+                  <ToggleRow
+                    icon="List"
+                    title="Scanlines"
+                    subtitle="Very soft CRT scanline texture"
+                    enabled={settings.retroScanlinesEnabled === true}
+                    onToggle={(next) => setSettings({ ...settings, retroScanlinesEnabled: next })}
+                  />
+                  <ToggleRow
+                    icon="Moon"
+                    title="CRT vignette"
+                    subtitle="Edge darkening for a retro finish"
+                    enabled={settings.retroVignetteEnabled === true}
+                    onToggle={(next) => setSettings({ ...settings, retroVignetteEnabled: next })}
                   />
                 </div>
               )}
@@ -5371,8 +5412,8 @@ const CardioLogger = ({ id, onClose, onUpdateSessionLogs, sessionLogs, history, 
       });
 
       const [settings, setSettings] = useState({ ...SETTINGS_DEFAULTS });
-      const [themeMode, setThemeModeState] = useState('light');
-      const [darkVariant, setDarkVariantState] = useState('blue');
+      const [themeMode, setThemeModeState] = useState('system');
+      const [resolvedTheme, setResolvedTheme] = useState('dark');
       const [colorfulExerciseCards, setColorfulExerciseCards] = useState(() => {
         try {
           const raw = localStorage.getItem('ps_colorfulExerciseCards');
@@ -5782,38 +5823,50 @@ const CardioLogger = ({ id, onClose, onUpdateSessionLogs, sessionLogs, history, 
         storage.set(LAST_OPEN_KEY, now.toISOString());
       }, [loaded]);
 
-      const applyTheme = () => {
-        const savedMode = storage.get(THEME_MODE_KEY, 'light');
-        const storedVariant = storage.get(DARK_VARIANT_KEY, 'blue');
-        const nextVariant = storedVariant || 'blue';
-        const themeClasses = ['theme-red', 'theme-yellow', 'theme-blue'];
-        document.body.classList.remove(...themeClasses);
-        if (savedMode === 'dark') {
-          document.body.classList.add('dark-mode');
-          document.body.classList.add(`theme-${nextVariant}`);
-        } else {
-          document.body.classList.remove('dark-mode');
-        }
-        setThemeModeState(savedMode);
-        setDarkVariantState(nextVariant);
+      const resolveSystemTheme = () => {
+        if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return 'dark';
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      };
+
+      const applyTheme = (nextMode = 'system') => {
+        const safeMode = ['system', 'light', 'dark'].includes(nextMode) ? nextMode : 'system';
+        const computedTheme = safeMode === 'system' ? resolveSystemTheme() : safeMode;
+        const isDark = computedTheme === 'dark';
+
+        document.documentElement.style.colorScheme = computedTheme;
+        document.documentElement.setAttribute('data-theme', computedTheme);
+        document.body.setAttribute('data-theme', computedTheme);
+        document.body.classList.toggle('dark-mode', isDark);
+
+        setThemeModeState(safeMode);
+        setResolvedTheme(computedTheme);
       };
 
       const setThemeMode = (mode) => {
-        storage.set(THEME_MODE_KEY, mode);
-        if (!storage.get(DARK_VARIANT_KEY, null)) {
-          storage.set(DARK_VARIANT_KEY, 'blue');
-        }
-        applyTheme();
-      };
-
-      const setDarkVariant = (variant) => {
-        storage.set(DARK_VARIANT_KEY, variant);
-        applyTheme();
+        const safeMode = ['system', 'light', 'dark'].includes(mode) ? mode : 'system';
+        storage.set(THEME_MODE_KEY, safeMode);
+        applyTheme(safeMode);
       };
 
       useEffect(() => {
-        applyTheme();
+        const savedMode = storage.get(THEME_MODE_KEY, 'system');
+        const safeMode = ['system', 'light', 'dark'].includes(savedMode) ? savedMode : 'system';
+        applyTheme(safeMode);
       }, []);
+
+      useEffect(() => {
+        if (themeMode !== 'system' || typeof window === 'undefined' || typeof window.matchMedia !== 'function') return;
+        const media = window.matchMedia('(prefers-color-scheme: dark)');
+        const handleChange = () => applyTheme('system');
+        media.addEventListener('change', handleChange);
+        return () => media.removeEventListener('change', handleChange);
+      }, [themeMode]);
+
+      useEffect(() => {
+        document.body.classList.toggle('retro-grid-on', settings.retroGridEnabled === true);
+        document.body.classList.toggle('retro-scanlines-on', settings.retroScanlinesEnabled === true);
+        document.body.classList.toggle('retro-vignette-on', settings.retroVignetteEnabled === true);
+      }, [settings.retroGridEnabled, settings.retroScanlinesEnabled, settings.retroVignetteEnabled]);
 
       const effectiveData = useMemo(() => getEffectiveData({
         history,
@@ -6923,7 +6976,7 @@ const CardioLogger = ({ id, onClose, onUpdateSessionLogs, sessionLogs, history, 
       
 return (
         <>
-          <InfinityParticles enabled={settings.particlesEnabled} isDarkMode={themeMode === 'dark'} />
+          <InfinityParticles enabled={settings.particlesEnabled} isDarkMode={resolvedTheme === 'dark'} />
           <InstallPrompt />
           {shouldShowLockedInGate && (
             <LockedInGate
@@ -7059,9 +7112,8 @@ return (
                     settings={settings}
                     setSettings={setSettings}
                     themeMode={themeMode}
-                    darkVariant={darkVariant}
+                    resolvedTheme={resolvedTheme}
                     setThemeMode={setThemeMode}
-                    setDarkVariant={setDarkVariant}
                     colorfulExerciseCards={colorfulExerciseCards}
                     onToggleColorfulExerciseCards={setColorfulExerciseCards}
                     onGoBack={() => setTab('home')}
